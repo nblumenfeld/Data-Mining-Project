@@ -13,6 +13,8 @@ import pandas as pd
 import numpy as np
 from sklearn import tree
 import math
+import graphviz
+
 
 
 #read the csv file but exclude the first row
@@ -66,6 +68,10 @@ clf = tree.DecisionTreeClassifier()
 clf = clf.fit(data,build_data_labels)
 print clf.predict(test)
 
+
+sc_data = tree.export_graphviz(clf, out_file=None)
+graph = graphviz.Source(sc_data)
+graph.render("StarCraft")
 
 
 #print df.head(5)
