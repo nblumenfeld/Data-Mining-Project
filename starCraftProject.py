@@ -66,7 +66,7 @@ name = df.columns.values
 
 clf = tree.DecisionTreeClassifier()
 clf = clf.fit(data,build_data_labels)
-print clf.predict(test)
+prediction = clf.predict(test)
 
 midBuild_set = set(test_data_labels)
 
@@ -74,6 +74,8 @@ sc_data = tree.export_graphviz(clf, out_file=None, feature_names=['ProtossPylon'
 graph = graphviz.Source(sc_data)
 graph.render("StarCraft")
 
+classif_rate = np.mean(prediction.ravel() == test_data_labels.ravel()) * 100
+print("classif_rate for %s : %f " % ('DecisionTree', classif_rate))
 
 #print df.head(5)
 #print target
