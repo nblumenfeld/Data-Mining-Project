@@ -68,8 +68,9 @@ clf = tree.DecisionTreeClassifier()
 clf = clf.fit(data,build_data_labels)
 print clf.predict(test)
 
+midBuild_set = set(test_data_labels)
 
-sc_data = tree.export_graphviz(clf, out_file=None)
+sc_data = tree.export_graphviz(clf, out_file=None, feature_names=['ProtossPylon','ProtossSecondPylon','ProtossFirstGas','ProtossSecondGas','ProtossFirstExpansion','ProtossGateway','ProtossGroundWeapons1','ProtossShields1','ProtossCitadel'], class_names=midBuild_set, filled=True, rounded=True, special_characters=True)
 graph = graphviz.Source(sc_data)
 graph.render("StarCraft")
 
