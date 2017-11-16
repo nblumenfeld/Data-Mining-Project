@@ -4,7 +4,7 @@
 
 | Project Step | Contribution  |
 | ------------- | -----:|
-| Step 1        | pandas example, set up git, clean data   |
+| Step 1        | pandas example, set up git, clean data, choose attributes for test tree   |
 | Step 2        | ???   |
 | Step 3        | ???   |
 | Step 4        | ???   |
@@ -13,7 +13,7 @@
 
 | Project Step | Contribution  |
 | ------------- | -----:|
-| Step 1        | pandas example, set up git, clean data   |
+| Step 1        | pandas example, set up git, clean data, cleaning code for test tree   |
 | Step 2        | ???   |
 | Step 3        | ???   |
 | Step 4        | ???   |
@@ -22,7 +22,7 @@
 
 | Project Step | Contribution  |
 | ------------- | -----:|
-| Step 1        | sklearn example, set up git, clean data |
+| Step 1        | sklearn example, set up git, clean data, compile and run test tree, made pdf result|
 | Step 2        | ???   |
 | Step 3        | ???   |
 | Step 4        | ???   |
@@ -31,7 +31,7 @@
 
 | Project Step | Contribution  |
 | ------------- | -----:|
-| Step 1        | sklearn example, set up git, clean data  |
+| Step 1        | sklearn example, set up git, clean data, sklearn decision tree research  |
 | Step 2        | ???   |
 | Step 3        | ???   |
 | Step 4        | ???   |
