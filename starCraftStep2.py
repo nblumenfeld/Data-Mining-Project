@@ -31,12 +31,12 @@ name = df.columns.values
 
 
 stds = 1.0  # Number of standard deviation that defines 'outlier'.
-z = question1_sample[['ProtossPylon','ProtossSecondPylon','ProtossFirstGas','ProtossSecondGas','ProtossFirstExpansion','ProtossGateway','ProtossGroundWeapons1','ProtossShields1','ProtossCitadel','midBuild']].groupby('midBuild').transform(
-    lambda group: (group - group.mean()).div(group.std()))
+z = question1_sample[['ProtossPylon','ProtossSecondPylon','ProtossFirstGas',
+'ProtossSecondGas','ProtossFirstExpansion','ProtossGateway','ProtossGroundWeapons1',
+'ProtossShields1','ProtossCitadel',
+'midBuild']].groupby('midBuild').transform(lambda group: (group - group.mean()).div(group.std()))
 outliers = z.abs() > stds
 
 data = question1_sample[outliers.any(axis=1)]
-
 build_data = data.sample(frac=.8)
-
 test_data = data.loc[~data.index.isin(build_data.index)]
