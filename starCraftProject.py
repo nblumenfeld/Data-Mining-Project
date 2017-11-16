@@ -41,6 +41,10 @@ name = df.columns.values
 #
 # test_data = df.loc[~df.index.isin(build_data.index)]
 
+# The block of code below looks at our sample data and then based on the number of standard deviations we specifiy, in this case 1, will trim out outlier rows.
+# Since we chose 1 standard deviation as our cutoff, all the remaining data in the data set represents the average 95% of the set (Thomas check this number before you add it to the paper, I'm just going off what I remember from stats.)
+# Somehow the grouping is done be the labels that are associated with each row but I'm pretty sure it's looking at the other 9 columns as it's basis for what is an outlier or not.
+
 stds = 1.0  # Number of standard deviation that defines 'outlier'.
 z = question1_sample[['ProtossPylon','ProtossSecondPylon','ProtossFirstGas','ProtossSecondGas','ProtossFirstExpansion','ProtossGateway','ProtossGroundWeapons1','ProtossShields1','ProtossCitadel','midBuild']].groupby('midBuild').transform(
     lambda group: (group - group.mean()).div(group.std()))
