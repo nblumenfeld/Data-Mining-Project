@@ -85,6 +85,11 @@ All commented code below was what we did for step 1 of the project
 '''
 All code below relates to step 2 of the project
 '''
-normalized_data_set = preprocessing.StandardScaler().fit_transform(data)
+# normalized_data_set = preprocessing.StandardScaler().fit_transform(data)
 
+print df.quantile(0.99), df.quantile(0.01)
+
+for col in range(1,52):
+    m=df.iloc[:,col].dropna().quantile(0.99)
+    df.iloc[:,col]=df.iloc[:,col].map(lambda x: None if x>m else x)
 
