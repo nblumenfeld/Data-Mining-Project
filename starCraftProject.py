@@ -13,6 +13,8 @@ import pandas as pd
 import numpy as np
 from sklearn import tree
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import GradientBoostingClassifier
 import matplotlib.pyplot as plt
 from sklearn import preprocessing
 import math
@@ -97,11 +99,37 @@ df =df.dropna()
 target = df['midBuild'].as_matrix()
 df = df.iloc[:,:-1]
 
-print target
-print df
+# print target
+# print df
+
+'''
+Decision tree
+'''
 model = DecisionTreeClassifier()
 tuned_parameters = {'criterion':["gini","entropy"]}
 model = GridSearchCV(model,tuned_parameters,cv=5,verbose=1)
+model.fit(df,target)
+print model.best_params_
+print model.best_score_ 
+
+'''
+Random Forest
+'''
+model = RandomForestClassifier()
+tuned_parameters = {'n_estimators':[10,20], 'max_depth':[None, 3]}
+model = GridSearchCV(model,tuned_parameters,cv=3,verbose=1)
+model.fit(df,target)
+print model.best_params_
+print model.best_score_ 
+
+
+'''
+Gradient Booster
+'''
+model = GradientBoostingClassifier() 
+tuned_parameters = {'n_estimators':[100,50], 'max_depth':[2, 3]}
+model.fit(df,target)
+model = GridSearchCV(model,tuned_parameters,cv=3,verbose=1)
 model.fit(df,target)
 print model.best_params_
 print model.best_score_ 
