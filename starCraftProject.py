@@ -12,9 +12,11 @@ Noah Blumenfeld
 import pandas as pd
 import numpy as np
 from sklearn import tree
+from sklearn.tree import DecisionTreeClassifier
 import matplotlib.pyplot as plt
 from sklearn import preprocessing
 import math
+from sklearn.model_selection import GridSearchCV
 # import graphviz
 
 
@@ -32,8 +34,6 @@ df = pd.read_csv(r'https://github.com/bgweber/StarCraftMining/raw/master/data/sc
 'ProtossCannon','ProtossGroundWeapons1','ProtossGroundArmor1','ProtossShields1','ProtossGroundWeapons2','ProtossGroundArmor2','ProtossShields2','ProtossCitadel','ProtossLegs','ProtossArchives','ProtossTemplar','ProtossArchon','ProtossStorm','ProtossDarkTemplar','ProtossDarkArchon','ProtossMaelstorm','ProtossRoboBay','ProtossShuttle','ProtossShuttleSpeed','ProtossRoboSupport','ProtossReavor','ProtossReavorDamage','ProtossReavorCapacity','ProtossObservory','ProtossObs','ProtossStargate','ProtossCorsair','ProtossDisruptionWeb','ProtossFleetBeason','ProtossCarrier','ProtossCarrierCapacity','ProtossTribunal',
 'ProtossArbitor','ProtossStatis','ProtossRecall','ProtossAirWeapons1','ProtossAirArmor1','ProtossAirWeapons2','ProtossAirArmor2','midBuild'])
 
-target = df['midBuild'].as_matrix()
-df = df.iloc[:,:-1]
 data = df.as_matrix()
 name = df.columns.values
 
@@ -87,9 +87,21 @@ All code below relates to step 2 of the project
 '''
 # normalized_data_set = preprocessing.StandardScaler().fit_transform(data)
 
-print df.quantile(0.99), df.quantile(0.01)
+# print df.quantile(0.99), df.quantile(0.01)
 
-for col in range(1,52):
+for col in range(1,56):
     m=df.iloc[:,col].dropna().quantile(0.99)
     df.iloc[:,col]=df.iloc[:,col].map(lambda x: None if x>m else x)
 
+df =df.dropna()
+target = df['midBuild'].as_matrix()
+df = df.iloc[:,:-1]
+
+print target
+print df
+model = DecisionTreeClassifier()
+tuned_parameters = {'criterion':["gini","entropy"]}
+model = GridSearchCV(model,tuned_parameters,cv=5,verbose=1)
+model.fit(df,target)
+print model.best_params_
+print model.best_score_ 
