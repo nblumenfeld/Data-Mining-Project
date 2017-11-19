@@ -15,6 +15,8 @@ from sklearn import tree
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.linear_model import LogisticRegression
 import matplotlib.pyplot as plt
 from sklearn import preprocessing
 import math
@@ -98,6 +100,8 @@ for col in range(1,56):
 df =df.dropna()
 target = df['midBuild'].as_matrix()
 df = df.iloc[:,:-1]
+df = preprocessing.StandardScaler().fit_transform(df)
+
 
 # print target
 # print df
@@ -130,6 +134,27 @@ model = GradientBoostingClassifier()
 tuned_parameters = {'n_estimators':[100,50], 'max_depth':[2, 3]}
 model.fit(df,target)
 model = GridSearchCV(model,tuned_parameters,cv=3,verbose=1)
+model.fit(df,target)
+print model.best_params_
+print model.best_score_ 
+
+
+'''
+KNN
+'''
+model = KNeighborsClassifier()
+tuned_parameters = {'n_neighbors':[5,9,15],'weights':['uniform','distance']}
+model = GridSearchCV(model, tuned_parameters, cv=3 ,verbose=1)
+model.fit(df,target)
+print model.best_params_
+print model.best_score_ 
+
+'''
+Logistic Regression
+'''
+model = LogisticRegression()
+tuned_parameters = {'penalty':['l1','l2']}
+model = GridSearchCV(model,tuned_parameters, cv=5, verbose=1)
 model.fit(df,target)
 print model.best_params_
 print model.best_score_ 
