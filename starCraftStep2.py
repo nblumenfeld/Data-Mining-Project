@@ -80,6 +80,14 @@ for col in range(1,56):
 
 
 df =df.dropna()
+#Build and test data
+build_data = df.sample(frac=.8)
+test_data = df.loc[~df.index.isin(build_data.index)]
+build_data_labels = build_data['midBuild']
+test_data_labels = test_data['midBuild']
+build_data = build_data.iloc[:,:-1]
+test_data = test_data.iloc[:,:-1]
+
 target = df['midBuild'].as_matrix()
 df = df.iloc[:,:-1]
 df = preprocessing.StandardScaler().fit_transform(df)
@@ -88,9 +96,9 @@ df = preprocessing.StandardScaler().fit_transform(df)
 '''
 Decision tree
 '''
-model = DecisionTreeClassifier()
+model_DT = DecisionTreeClassifier()
 tuned_parameters = {'criterion':["gini","entropy"]}
-model = GridSearchCV(model,tuned_parameters,cv=5,verbose=1)
+model = GridSearchCV(model_DT,tuned_parameters,cv=5,verbose=1)
 model.fit(df,target)
 print "Decision tree, gini"
 print model.best_params_
@@ -104,14 +112,18 @@ Evaluation
 Plot Feature Importance
 '''
 
-value = model.feature_importances_
+
+model_DT.fit(build_data, build_data_labels)
+yhat=model_DT.predict(build_data)
+
+value = model_DT.feature_importances_
 
 ind=sorted(range(len(value)),reverse=False,key=lambda k: value[k])
-print ind
+#print ind
 features=name[ind]
 value=sorted(value,reverse=False)
 ind=np.array(range(10))
-print ind
+#print ind
 plt.rcParams['figure.figsize'] = (9,7)
 plt.barh(bottom=ind,height=0.5,width=value,color='r')
 plt.yticks(ind+0.25,features)
