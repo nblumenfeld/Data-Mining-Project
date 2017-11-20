@@ -12,7 +12,15 @@ Noah Blumenfeld
 import pandas as pd
 import numpy as np
 from sklearn import tree
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.linear_model import LogisticRegression
+import matplotlib.pyplot as plt
+from sklearn import preprocessing
 import math
+from sklearn.model_selection import GridSearchCV
 
 #read the csv file but exclude the first row
 #1140 rows
@@ -24,12 +32,13 @@ df = pd.read_csv(r'https://github.com/bgweber/StarCraftMining/raw/master/data/sc
 'ProtossArbitor','ProtossStatis','ProtossRecall','ProtossAirWeapons1','ProtossAirArmor1','ProtossAirWeapons2','ProtossAirArmor2','midBuild'])
 
 
-target = df['midBuild'].as_matrix()
 #df = df.iloc[:,:-1]
-dataMatrix = df.as_matrix()
+data = df.as_matrix()
 name = df.columns.values
 
-
+##########################################################
+#Our own Decision DecisionTree
+print "Our own Decision, with a STDS of 2.0"
 stds = 2.0  # Number of standard deviation that defines 'outlier'.
 z = df.groupby('midBuild').transform(lambda group: (group - group.mean()).div(group.std()))
 outliers = z.abs() > stds
@@ -57,11 +66,111 @@ midBuild_set = set(test_data_labels)
 
 classif_rate = np.mean(prediction.ravel() == test_data_labels.ravel()) * 100
 print("classif_rate for %s : %f " % ('DecisionTree', classif_rate))
+print
 
-###########
-#DT
-#kNN
-#Forest
-#GradientBoost
-#Regression
-#Kmeans clustering
+###########################################################
+
+'''
+All code below relates to step 2 of the project
+'''
+
+for col in range(1,56):
+    m=df.iloc[:,col].dropna().quantile(0.99)
+    df.iloc[:,col]=df.iloc[:,col].map(lambda x: None if x>m else x)
+
+
+df =df.dropna()
+target = df['midBuild'].as_matrix()
+df = df.iloc[:,:-1]
+df = preprocessing.StandardScaler().fit_transform(df)
+
+
+'''
+Decision tree
+'''
+model = DecisionTreeClassifier()
+tuned_parameters = {'criterion':["gini","entropy"]}
+model = GridSearchCV(model,tuned_parameters,cv=5,verbose=1)
+model.fit(df,target)
+print "Decision tree, gini"
+print model.best_params_
+print model.best_score_
+print
+
+'''
+Pre Processing
+Normalize
+Evaluation
+Plot Feature Importance
+'''
+
+value = model.feature_importances_
+
+ind=sorted(range(len(value)),reverse=False,key=lambda k: value[k])
+print ind
+features=name[ind]
+value=sorted(value,reverse=False)
+ind=np.array(range(10))
+print ind
+plt.rcParams['figure.figsize'] = (9,7)
+plt.barh(bottom=ind,height=0.5,width=value,color='r')
+plt.yticks(ind+0.25,features)
+plt.xlabel('Weights')
+plt.ylabel('Features')
+plt.title('Feature Importances')
+#plt.subplots_adjust(left=0.2)
+plt.tight_layout()
+#plt.savefig('feature_importances.png', format='png', dpi=300)
+plt.show()
+
+'''
+Random Forest
+'''
+model = RandomForestClassifier()
+tuned_parameters = {'n_estimators':[10,20], 'max_depth':[None, 3]}
+model = GridSearchCV(model,tuned_parameters,cv=3,verbose=1)
+model.fit(df,target)
+print "Random Forest"
+print model.best_params_
+print model.best_score_
+print
+
+
+'''
+Gradient Booster
+'''
+model = GradientBoostingClassifier()
+tuned_parameters = {'n_estimators':[100,50], 'max_depth':[2, 3]}
+model.fit(df,target)
+model = GridSearchCV(model,tuned_parameters,cv=3,verbose=1)
+model.fit(df,target)
+print "Gradient Booster"
+print model.best_params_
+print model.best_score_
+print
+
+
+'''
+KNN
+'''
+model = KNeighborsClassifier()
+tuned_parameters = {'n_neighbors':[5,9,15],'weights':['uniform','distance']}
+model = GridSearchCV(model, tuned_parameters, cv=3 ,verbose=1)
+model.fit(df,target)
+print "KNN"
+print model.best_params_
+print model.best_score_
+print
+
+
+'''
+Logistic Regression
+'''
+model = LogisticRegression()
+tuned_parameters = {'penalty':['l1','l2']}
+model = GridSearchCV(model,tuned_parameters, cv=5, verbose=1)
+model.fit(df,target)
+print "Logistic Regression"
+print model.best_params_
+print model.best_score_
+print
