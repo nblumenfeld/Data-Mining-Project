@@ -37,6 +37,7 @@ data = df.as_matrix()
 name = df.columns.values
 
 ##########################################################
+'''
 #Our own Decision DecisionTree
 print "Our own Decision, with a STDS of 2.0"
 stds = 2.0  # Number of standard deviation that defines 'outlier'.
@@ -46,6 +47,7 @@ outliers = z.abs() > stds
 data =df[outliers.any(axis=1)]
 build_data = data.sample(frac=.8)
 test_data = data.loc[~data.index.isin(build_data.index)]
+
 
 #######
 #from step1
@@ -69,6 +71,7 @@ print("classif_rate for %s : %f " % ('DecisionTree', classif_rate))
 print
 
 ###########################################################
+'''
 
 '''
 All code below relates to step 2 of the project
@@ -93,24 +96,89 @@ df = df.iloc[:,:-1]
 df = preprocessing.StandardScaler().fit_transform(df)
 
 
+findBestscore = []
 '''
 Decision tree
 '''
+print "Decision tree"
 model_DT = DecisionTreeClassifier()
 tuned_parameters = {'criterion':["gini","entropy"]}
-model = GridSearchCV(model_DT,tuned_parameters,cv=5,verbose=1)
-model.fit(df,target)
-print "Decision tree, gini"
-print model.best_params_
-print model.best_score_
+model_DT.fit(df,target)
+model_DT_GSCV = GridSearchCV(model_DT,tuned_parameters,cv=5,verbose=1)
+model_DT_GSCV.fit(df,target)
+print model_DT_GSCV.best_params_
+print model_DT_GSCV.best_score_
 print
+findBestscore.append(("Decision Tree", model_DT_GSCV.best_score_))
 
 '''
+Random Forest
+'''
+print "Random Forest"
+model_RF = RandomForestClassifier()
+tuned_parameters = {'n_estimators':[10,20], 'max_depth':[None, 3]}
+model_RF.fit(df,target)
+model_RF_GSCV = GridSearchCV(model_RF,tuned_parameters,cv=3,verbose=1)
+model_RF_GSCV.fit(df,target)
+print model_RF_GSCV.best_params_
+print model_RF_GSCV.best_score_
+print
+findBestscore.append(("Random Forest", model_RF_GSCV.best_score_))
+
+
+'''
+Gradient Booster
+'''
+print "Gradient Booster"
+model_GB = GradientBoostingClassifier()
+tuned_parameters = {'n_estimators':[100,50], 'max_depth':[2, 3]}
+model_GB.fit(df,target)
+model_GB_GSCV = GridSearchCV(model_GB,tuned_parameters,cv=3,verbose=1)
+model_GB_GSCV.fit(df,target)
+print model_GB_GSCV.best_params_
+print model_GB_GSCV.best_score_
+print
+findBestscore.append(("Gradient Booster", model_GB_GSCV.best_score_))
+
+
+'''
+KNN
+'''
+print "KNN"
+model_KNN = KNeighborsClassifier()
+tuned_parameters = {'n_neighbors':[5,9,15],'weights':['uniform','distance']}
+model_KNN.fit(df,target)
+model_KNN_GSCV = GridSearchCV(model_KNN, tuned_parameters, cv=3 ,verbose=1)
+model_KNN_GSCV.fit(df,target)
+print model_KNN_GSCV.best_params_
+print model_KNN_GSCV.best_score_
+print
+findBestscore.append(("KNN", model_KNN_GSCV.best_score_))
+
+
+'''
+Logistic Regression
+'''
+print "Logistic Regression"
+model_LR = LogisticRegression()
+tuned_parameters = {'penalty':['l1','l2']}
+model_LR.fit(df,target)
+model_LR_GSCV = GridSearchCV(model_LR,tuned_parameters, cv=5, verbose=1)
+model_LR_GSCV.fit(df,target)
+print model_LR_GSCV.best_params_
+print model_LR_GSCV.best_score_
+print
+findBestscore.append(("Logistic Regression", model_LR_GSCV.best_score_))
+
+from operator import itemgetter
+print findBestscore
+print max(findBestscore,key=itemgetter(1))
+'''
+Visualization
 Pre Processing
 Normalize
 Evaluation
 Plot Feature Importance
-'''
 
 
 model_DT.fit(build_data, build_data_labels)
@@ -136,53 +204,3 @@ plt.tight_layout()
 plt.show()
 
 '''
-Random Forest
-'''
-model = RandomForestClassifier()
-tuned_parameters = {'n_estimators':[10,20], 'max_depth':[None, 3]}
-model = GridSearchCV(model,tuned_parameters,cv=3,verbose=1)
-model.fit(df,target)
-print "Random Forest"
-print model.best_params_
-print model.best_score_
-print
-
-
-'''
-Gradient Booster
-'''
-model = GradientBoostingClassifier()
-tuned_parameters = {'n_estimators':[100,50], 'max_depth':[2, 3]}
-model.fit(df,target)
-model = GridSearchCV(model,tuned_parameters,cv=3,verbose=1)
-model.fit(df,target)
-print "Gradient Booster"
-print model.best_params_
-print model.best_score_
-print
-
-
-'''
-KNN
-'''
-model = KNeighborsClassifier()
-tuned_parameters = {'n_neighbors':[5,9,15],'weights':['uniform','distance']}
-model = GridSearchCV(model, tuned_parameters, cv=3 ,verbose=1)
-model.fit(df,target)
-print "KNN"
-print model.best_params_
-print model.best_score_
-print
-
-
-'''
-Logistic Regression
-'''
-model = LogisticRegression()
-tuned_parameters = {'penalty':['l1','l2']}
-model = GridSearchCV(model,tuned_parameters, cv=5, verbose=1)
-model.fit(df,target)
-print "Logistic Regression"
-print model.best_params_
-print model.best_score_
-print
