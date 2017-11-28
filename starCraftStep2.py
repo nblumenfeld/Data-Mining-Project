@@ -203,7 +203,6 @@ features=name[ind]
 value=sorted(value,reverse=True)
 value = value[:10]
 ind=np.array(range(10))
-<<<<<<< HEAD
 # plt.rcParams['figure.figsize'] = (9,7)
 # plt.barh(bottom=ind,height=0.5,width=value,color='r')
 # plt.yticks(ind+0.25,features)
