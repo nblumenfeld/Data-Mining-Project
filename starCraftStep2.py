@@ -179,19 +179,30 @@ Pre Processing
 Normalize
 Evaluation
 Plot Feature Importance
+'''
+
+model_best = GradientBoostingClassifier(n_estimators=50,max_depth=2)
+model_best.fit(build_data,build_data_labels)
+yhat = model_best.predict(build_data)
+value = model_best.feature_importances_
 
 
-model_DT.fit(build_data, build_data_labels)
-yhat=model_DT.predict(build_data)
+# model_DT.fit(build_data, build_data_labels)
+# yhat=model_DT.predict(build_data)
 
-value = model_DT.feature_importances_
+# value = model_DT.feature_importances_
+
+# print value
 
 ind=sorted(range(len(value)),reverse=False,key=lambda k: value[k])
 #print ind
 features=name[ind]
-value=sorted(value,reverse=False)
+# print features
+value=sorted(value,reverse=True)
+value = value[:10]
+# print value
 ind=np.array(range(10))
-#print ind
+# print ind
 plt.rcParams['figure.figsize'] = (9,7)
 plt.barh(bottom=ind,height=0.5,width=value,color='r')
 plt.yticks(ind+0.25,features)
@@ -202,5 +213,3 @@ plt.title('Feature Importances')
 plt.tight_layout()
 #plt.savefig('feature_importances.png', format='png', dpi=300)
 plt.show()
-
-'''
