@@ -219,3 +219,22 @@ plt.show()
 trace = go.Pie(labels=features, values=value)
 
 py.iplot([trace], filename='GB_pie_chart')
+
+
+
+#This is a scatterplot using Bokeh
+#It shows the relation between the Best featuture from the GB_feature_importance.png
+# vs the 10th best feature from GB_feature_importance.png
+from bokeh.charts import Scatter, output_file, show
+
+p1 = Scatter(df, x='ProtossGroundArmor1', y='ProtossStatis', title="Ground Armor 1 vs Dark Archon",
+            xlabel="Ground Armor", ylabel="Staisis information")
+
+output_file("scatter.html")
+
+show(p1)
+'''
+The scatterplot show that there isnt to much correlation between the two attributes
+While we can see some correlation in the center,
+compared to how many datapoint we use there is littel to no correlation.
+'''
