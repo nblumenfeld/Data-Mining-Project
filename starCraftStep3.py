@@ -28,13 +28,13 @@ from string import ascii_letters
 import seaborn as sns
 from scipy.stats.kde import gaussian_kde
 
-def kde_plot(x):   
+def kde_plot(x):
     kde = gaussian_kde(x)
     positions = np.linspace(x.min(), x.max())
     smoothed = kde(positions)
     plt.plot(positions, smoothed)
-    
-def kde_values(x):   
+
+def kde_values(x):
     kde = gaussian_kde(x)
     positions = np.linspace(x.min(), x.max())
     smoothed = kde(positions)
@@ -53,8 +53,15 @@ dataFrame = df.as_matrix()
 name = df.columns.values
 
 
+df = df['ProtossPylon','ProtossSecondPylon','ProtossFirstGas','ProtossSecondGas','ProtossFirstExpansion','ProtossSecondExpansion','ProtossThirdExpansion','ProtossFourthExpansion','ProtossGateway','ProtossSecondGatway','ProtossThirdGatway','ProtossFourthGatway','ProtossCore','ProtossZealot','ProtossGoon','ProtossRange','ProtossForge',
+'ProtossCannon','ProtossGroundWeapons1','ProtossGroundArmor1','ProtossShields1','ProtossGroundWeapons2','ProtossCitadel','ProtossLegs','ProtossArchives','ProtossTemplar','ProtossArchon','ProtossStorm','ProtossDarkTemplar','ProtossRoboBay','ProtossShuttle','ProtossReavor','ProtossObservory','ProtossObs',
+'ProtossStargate','ProtossCarrier','ProtossCarrierCapacity','ProtossAirWeapons1','ProtossAirArmor1','midBuild']
 
 
+droppedAttributes = ['ProtossDisruptionWeb','ProtossReavorCapacity','ProtossReavorDamage'
+,'ProtossCorsair','ProtossAirWeapons2','ProtossGroundArmor2','ProtossAirArmor2','ProtossDarkArchon'
+,'ProtossMaelstorm','ProtossShields2','ProtossFleetBeason''ProtossTribunal','ProtossArbitor','ProtossStatis'
+,'ProtossRecall','ProtossRoboSupport','ProtossShuttleSpeed']
 
 
 
