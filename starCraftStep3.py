@@ -26,6 +26,19 @@ import math
 from sklearn.model_selection import GridSearchCV
 from string import ascii_letters
 import seaborn as sns
+from scipy.stats.kde import gaussian_kde
+
+def kde_plot(x):   
+    kde = gaussian_kde(x)
+    positions = np.linspace(x.min(), x.max())
+    smoothed = kde(positions)
+    plt.plot(positions, smoothed)
+    
+def kde_values(x):   
+    kde = gaussian_kde(x)
+    positions = np.linspace(x.min(), x.max())
+    smoothed = kde(positions)
+    return positions, smoothed
 
 
 #read in data
@@ -38,6 +51,13 @@ df = pd.read_csv(r'https://github.com/bgweber/StarCraftMining/raw/master/data/sc
 targetDataframe = df.iloc[:,:-1].as_matrix()
 dataFrame = df.as_matrix()
 name = df.columns.values
+
+
+
+
+
+
+
 
 
 ################################
@@ -69,65 +89,65 @@ dfPreProsesed = preprocessing.StandardScaler().fit_transform(dfDropped)
 dataMatrix = dfDropped.as_matrix()
 
 
-#####################################
-#GradientBoostingClassifier
-model_best = GradientBoostingClassifier(n_estimators=50,max_depth=2)
-model_best.fit(build_data,build_data_labels)
-yhat = model_best.predict(build_data)
-value = model_best.feature_importances_
+# #####################################
+# #GradientBoostingClassifier
+# model_best = GradientBoostingClassifier(n_estimators=50,max_depth=2)
+# model_best.fit(build_data,build_data_labels)
+# yhat = model_best.predict(build_data)
+# value = model_best.feature_importances_
 
 
-ind=sorted(range(len(value)),reverse=False,key=lambda k: value[k])
-features=name[ind]
-value=sorted(value,reverse=True)
-value = value[:10]
-ind=np.array(range(10))
+# ind=sorted(range(len(value)),reverse=False,key=lambda k: value[k])
+# features=name[ind]
+# value=sorted(value,reverse=True)
+# value = value[:10]
+# ind=np.array(range(10))
 
 
-################################
-#feature Importance
- plt.rcParams['figure.figsize'] = (9,7)
- plt.barh(bottom=ind,height=0.5,width=value,color='r')
- plt.yticks(ind+0.25,features)
- plt.xlabel('Weights')
- plt.ylabel('Features')
- plt.title('Feature Importances')
- plt.tight_layout()
- plt.show()
+# ################################
+# #feature Importance
+#  plt.rcParams['figure.figsize'] = (9,7)
+#  plt.barh(bottom=ind,height=0.5,width=value,color='r')
+#  plt.yticks(ind+0.25,features)
+#  plt.xlabel('Weights')
+#  plt.ylabel('Features')
+#  plt.title('Feature Importances')
+#  plt.tight_layout()
+#  plt.show()
 
- ################################
- # Pie chart using plotly
- # trace = go.Pie(labels=features, values=value)
- # py.iplot([trace], filename='GB_pie_chart')
+#  ################################
+#  # Pie chart using plotly
+#  # trace = go.Pie(labels=features, values=value)
+#  # py.iplot([trace], filename='GB_pie_chart')
 
-'''
-Conditional means with observations using seaborn
-'''
-df = df[['ProtossStatis','ProtossArbitor','ProtossTribunal','ProtossCarrier','ProtossReavorCapacity','ProtossReavorDamage','ProtossShuttleSpeed','ProtossMaelstorm','ProtossDarkArchon','ProtossGroundArmor1','midBuild']]
+# '''
+# Conditional means with observations using seaborn
+# '''
+# df = df[['ProtossStatis','ProtossArbitor','ProtossTribunal','ProtossCarrier','ProtossReavorCapacity','ProtossReavorDamage','ProtossShuttleSpeed','ProtossMaelstorm','ProtossDarkArchon','ProtossGroundArmor1','midBuild']]
 
-sns.set(style="whitegrid", palette="muted")
+# sns.set(style="whitegrid", palette="muted")
 
-df = pd.melt(df, "midBuild", var_name="attribute")
-
-
-sns.swarmplot(x="value", y="attribute", hue="midBuild", data=df)
-
-plt.show()
+# df = pd.melt(df, "midBuild", var_name="attribute")
 
 
-#This is a scatterplot using Bokeh
-#It shows the relation between the Best featuture from the GB_feature_importance.png
-# vs the 10th best feature from GB_feature_importance.png
-from bokeh.charts import Scatter, output_file, show
+# sns.swarmplot(x="value", y="attribute", hue="midBuild", data=df)
 
-p1 = Scatter(dfDropped, x='ProtossGroundArmor1', y='ProtossStatis', title="Ground Armor 1 vs Dark Archon",
-            xlabel="Ground Armor", ylabel="Staisis information")
+# plt.show()
 
-output_file("scatter.html")
 
-show(p1)
-'''
-The scatterplot show that there isnt to much correlation between the two attributes
-While we can see some correlation in the center,
-compared to how many datapoint we use there is littel to no correlation.
-'''
+# #This is a scatterplot using Bokeh
+# #It shows the relation between the Best featuture from the GB_feature_importance.png
+# # vs the 10th best feature from GB_feature_importance.png
+# from bokeh.charts import Scatter, output_file, show
+
+# p1 = Scatter(dfDropped, x='ProtossGroundArmor1', y='ProtossStatis', title="Ground Armor 1 vs Dark Archon",
+#             xlabel="Ground Armor", ylabel="Staisis information")
+
+# output_file("scatter.html")
+
+# show(p1)
+# '''
+# The scatterplot show that there isnt to much correlation between the two attributes
+# While we can see some correlation in the center,
+# compared to how many datapoint we use there is littel to no correlation.
+# '''
