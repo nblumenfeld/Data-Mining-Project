@@ -26,6 +26,20 @@ import math
 from sklearn.model_selection import GridSearchCV
 from string import ascii_letters
 import seaborn as sns
+from scipy.stats.kde import gaussian_kde
+
+
+def kde_plot(x):   
+    kde = gaussian_kde(x)
+    positions = np.linspace(x.min(), x.max())
+    smoothed = kde(positions)
+    plt.plot(positions, smoothed)
+    
+def kde_values(x):   
+    kde = gaussian_kde(x)
+    positions = np.linspace(x.min(), x.max())
+    smoothed = kde(positions)
+    return positions, smoothed
 
 
 
@@ -84,12 +98,15 @@ print
 All code below relates to step 2 of the project
 '''
 
+df_preOutlier = df
+
 for col in range(1,56):
-    m=df.iloc[:,col].dropna().quantile(0.99)
+    m=df.iloc[:,col].dropna().quantile(0.96)
     df.iloc[:,col]=df.iloc[:,col].map(lambda x: None if x>m else x)
 
-
+df_preOutlier = df_preOutlier.dropna()
 df =df.dropna()
+
 #Build and test data
 build_data = df.sample(frac=.8)
 test_data = df.loc[~df.index.isin(build_data.index)]
@@ -101,6 +118,20 @@ test_data = test_data.iloc[:,:-1]
 target = df['midBuild'].as_matrix()
 df = df.iloc[:,:-1]
 df = preprocessing.StandardScaler().fit_transform(df)
+
+df_preOutlier_test = df_preOutlier['ProtossFirstExpansion']
+
+df_test=df[4]
+
+plt.rcParams['figure.figsize'] = (15,5)
+f, (ax1, ax2) = plt.subplots(1, 2)
+positions, smoothed = kde_values(df_preOutlier_test)
+ax1.plot(positions, smoothed)
+ax1.set_title('Star Craft first expansion: All Data')
+positions, smoothed = kde_values(df_test[df_test<50000])
+ax2.plot(positions, smoothed)
+ax2.set_title('Star Craft first expansion: Data after deleting outliers')
+plt.show()
 
 
 # findBestscore = []
@@ -180,29 +211,28 @@ df = preprocessing.StandardScaler().fit_transform(df)
 # from operator import itemgetter
 # print findBestscore
 # print max(findBestscore,key=itemgetter(1))
-'''
-Visualization
-Pre Processing
-Normalize
-Evaluation
-Plot Feature Importance
-'''
+# '''
+# Visualization
+# Pre Processing
+# Normalize
+# Evaluation
+# Plot Feature Importance
+# '''
 
-'''
-Feature Importances
-'''
+# '''
+# Feature Importances
+# '''
 
-model_best = GradientBoostingClassifier(n_estimators=50,max_depth=2)
-model_best.fit(build_data,build_data_labels)
-yhat = model_best.predict(build_data)
-value = model_best.feature_importances_
+# model_best = GradientBoostingClassifier(n_estimators=50,max_depth=2)
+# model_best.fit(build_data,build_data_labels)
+# yhat = model_best.predict(build_data)
+# value = model_best.feature_importances_
 
 
-ind=sorted(range(len(value)),reverse=False,key=lambda k: value[k])
-features=name[ind]
-value=sorted(value,reverse=True)
-value = value[:10]
-ind=np.array(range(10))
+# ind=sorted(range(len(value)),reverse=False,key=lambda k: value[k])
+# features=name[ind]
+# value=sorted(value,reverse=False)
+# ind=np.array(range(56))
 # plt.rcParams['figure.figsize'] = (9,7)
 # plt.barh(bottom=ind,height=0.5,width=value,color='r')
 # plt.yticks(ind+0.25,features)
@@ -213,48 +243,48 @@ ind=np.array(range(10))
 # plt.show()
 
 
+# # '''
+# # Pie chart using plotly
+# # '''
+# # trace = go.Pie(labels=features, values=value)
+# # py.iplot([trace], filename='GB_pie_chart')
+
+
+
+
 # '''
-# Pie chart using plotly
+# Conditional means with observations using seaborn
 # '''
-# trace = go.Pie(labels=features, values=value)
-# py.iplot([trace], filename='GB_pie_chart')
+
+# df = pd.read_csv(r'https://github.com/bgweber/StarCraftMining/raw/master/data/scmPvT_Protoss_Mid.csv', skiprows=1, header=None, names = ['ProtossPylon','ProtossSecondPylon','ProtossFirstGas','ProtossSecondGas','ProtossFirstExpansion','ProtossSecondExpansion','ProtossThirdExpansion','ProtossFourthExpansion','ProtossGateway','ProtossSecondGatway','ProtossThirdGatway','ProtossFourthGatway','ProtossCore','ProtossZealot','ProtossGoon','ProtossRange','ProtossForge',
+# 'ProtossCannon','ProtossGroundWeapons1','ProtossGroundArmor1','ProtossShields1','ProtossGroundWeapons2','ProtossGroundArmor2','ProtossShields2','ProtossCitadel','ProtossLegs','ProtossArchives','ProtossTemplar','ProtossArchon','ProtossStorm','ProtossDarkTemplar','ProtossDarkArchon','ProtossMaelstorm','ProtossRoboBay','ProtossShuttle','ProtossShuttleSpeed','ProtossRoboSupport','ProtossReavor','ProtossReavorDamage','ProtossReavorCapacity','ProtossObservory','ProtossObs',
+# 'ProtossStargate','ProtossCorsair','ProtossDisruptionWeb','ProtossFleetBeason','ProtossCarrier','ProtossCarrierCapacity','ProtossTribunal',
+# 'ProtossArbitor','ProtossStatis','ProtossRecall','ProtossAirWeapons1','ProtossAirArmor1','ProtossAirWeapons2','ProtossAirArmor2','midBuild'])
+
+# df = df[['ProtossStatis','ProtossArbitor','ProtossTribunal','ProtossCarrier','ProtossReavorCapacity','ProtossReavorDamage','ProtossShuttleSpeed','ProtossMaelstorm','ProtossDarkArchon','ProtossGroundArmor1','midBuild']]
+
+# sns.set(style="whitegrid", palette="muted")
+
+# df = pd.melt(df, "midBuild", var_name="attribute")
 
 
+# sns.swarmplot(x="value", y="attribute", hue="midBuild", data=df)
 
+# plt.show()
 
-'''
-Conditional means with observations using seaborn
-'''
+# #This is a scatterplot using Bokeh
+# #It shows the relation between the Best featuture from the GB_feature_importance.png
+# # vs the 10th best feature from GB_feature_importance.png
+# from bokeh.charts import Scatter, output_file, show
 
-df = pd.read_csv(r'https://github.com/bgweber/StarCraftMining/raw/master/data/scmPvT_Protoss_Mid.csv', skiprows=1, header=None, names = ['ProtossPylon','ProtossSecondPylon','ProtossFirstGas','ProtossSecondGas','ProtossFirstExpansion','ProtossSecondExpansion','ProtossThirdExpansion','ProtossFourthExpansion','ProtossGateway','ProtossSecondGatway','ProtossThirdGatway','ProtossFourthGatway','ProtossCore','ProtossZealot','ProtossGoon','ProtossRange','ProtossForge',
-'ProtossCannon','ProtossGroundWeapons1','ProtossGroundArmor1','ProtossShields1','ProtossGroundWeapons2','ProtossGroundArmor2','ProtossShields2','ProtossCitadel','ProtossLegs','ProtossArchives','ProtossTemplar','ProtossArchon','ProtossStorm','ProtossDarkTemplar','ProtossDarkArchon','ProtossMaelstorm','ProtossRoboBay','ProtossShuttle','ProtossShuttleSpeed','ProtossRoboSupport','ProtossReavor','ProtossReavorDamage','ProtossReavorCapacity','ProtossObservory','ProtossObs',
-'ProtossStargate','ProtossCorsair','ProtossDisruptionWeb','ProtossFleetBeason','ProtossCarrier','ProtossCarrierCapacity','ProtossTribunal',
-'ProtossArbitor','ProtossStatis','ProtossRecall','ProtossAirWeapons1','ProtossAirArmor1','ProtossAirWeapons2','ProtossAirArmor2','midBuild'])
+# p1 = Scatter(df, x='ProtossGroundArmor1', y='ProtossStatis', title="Ground Armor 1 vs Dark Archon",
+#             xlabel="Ground Armor", ylabel="Staisis information")
 
-df = df[['ProtossStatis','ProtossArbitor','ProtossTribunal','ProtossCarrier','ProtossReavorCapacity','ProtossReavorDamage','ProtossShuttleSpeed','ProtossMaelstorm','ProtossDarkArchon','ProtossGroundArmor1','midBuild']]
+# output_file("scatter.html")
 
-sns.set(style="whitegrid", palette="muted")
-
-df = pd.melt(df, "midBuild", var_name="attribute")
-
-
-sns.swarmplot(x="value", y="attribute", hue="midBuild", data=df)
-
-plt.show()
-
-#This is a scatterplot using Bokeh
-#It shows the relation between the Best featuture from the GB_feature_importance.png
-# vs the 10th best feature from GB_feature_importance.png
-from bokeh.charts import Scatter, output_file, show
-
-p1 = Scatter(df, x='ProtossGroundArmor1', y='ProtossStatis', title="Ground Armor 1 vs Dark Archon",
-            xlabel="Ground Armor", ylabel="Staisis information")
-
-output_file("scatter.html")
-
-show(p1)
-'''
-The scatterplot show that there isnt to much correlation between the two attributes
-While we can see some correlation in the center,
-compared to how many datapoint we use there is littel to no correlation.
-'''
+# show(p1)
+# '''
+# The scatterplot show that there isnt to much correlation between the two attributes
+# While we can see some correlation in the center,
+# compared to how many datapoint we use there is littel to no correlation.
+# '''
